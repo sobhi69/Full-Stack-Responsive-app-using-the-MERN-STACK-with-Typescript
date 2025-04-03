@@ -49,7 +49,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
             const response = await axiosInstance.post('/auth/sign-in', userData)
             setUser(response.data)
             localStorage.setItem('user', JSON.stringify(response.data))
-            navigate('/easy-to-earn')
+            navigate('/')
         } catch (error: any) {
 
             alert(error?.response?.data?.message)
@@ -83,8 +83,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         try {
             await axiosInstance.post('/auth/register', userInfo)
             return true
-            // setUser(response.data)
-            // navigate('/sign-in')
         } catch (error: any) {
             alert(error?.response?.data?.message)
             setError(error)
@@ -115,7 +113,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         try {
             const response = await axiosInstance.patch(`/user/${_id}`, data)
             setUser(response.data)
-            navigate('/easy-to-earn')
+            navigate('/')
         } catch (error: any) {
             alert(error?.response?.data?.message)
             setError(error)

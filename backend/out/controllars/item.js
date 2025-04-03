@@ -37,7 +37,8 @@ const deleteAllItems = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.deleteAllItems = deleteAllItems;
 const updateItems = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const cardItems = req.body;
+    const cardItems = req.body.cardItems;
+    const inc = req.body.inc;
     const updateOps = cardItems.map(item => {
         const updateOp = {
             'updateOne': {
@@ -46,7 +47,7 @@ const updateItems = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                 },
                 "update": {
                     $inc: {
-                        quantity: -item.quantity
+                        quantity: !inc ? -item.quantity : item.quantity
                     }
                 }
             }
@@ -63,6 +64,31 @@ const updateItems = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.updateItems = updateItems;
+// export const increaseItems = async (req: Request, res: Response) => {
+//     const cardItems: Item[] = req.body
+//     const updateOps = cardItems.map(item => {
+//         const updateOp = {
+//             'updateOne': {
+//                 'filter': {
+//                     _id: item._id
+//                 },
+//                 'update': {
+//                     $inc: {
+//                         quantity: item.quantity
+//                     }
+//                 }
+//             }
+//         }
+//         return updateOp
+//     })
+//     try {
+//         const result = await ItemModel.bulkWrite(updateOps)
+//         res.json(result)
+//     } catch (error: any) {
+//         console.error(`error in updateItems ${error}`)
+//         res.status(500).json({ message: error.message })
+//     }
+// }
 const createOneItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, cost, price, minPrice, quantity, category } = req.body;
     if (!title || !cost || !price || !quantity) {

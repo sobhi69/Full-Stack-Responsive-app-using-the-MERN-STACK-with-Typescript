@@ -6,5 +6,6 @@ export default interface UserProfile {
     confirmPassword:string,
     phone?:string,
     createdAt?:string,
-    updatedAt?:string
+    updatedAt?:string,
+    token?:string
 }

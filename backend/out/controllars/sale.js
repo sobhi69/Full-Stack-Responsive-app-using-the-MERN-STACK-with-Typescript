@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteSales = exports.getSales = exports.createSale = void 0;
+exports.retrieveOneSale = exports.deleteOneSale = exports.getOneSaleMidll = exports.deleteSales = exports.getSales = exports.createSale = void 0;
 const sale_1 = __importDefault(require("../model/sale"));
 const createSale = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { cardItems, total, discount, addition, client, salesPerson } = req.body;
@@ -61,3 +61,35 @@ const deleteSales = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.deleteSales = deleteSales;
+const getOneSaleMidll = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let sale;
+    try {
+        sale = yield sale_1.default.findById(req.params.id);
+        if (!sale) {
+            res.status(404).json({ message: `sale with id: ${req.params.id} doesn't exist` });
+            return;
+        }
+    }
+    catch (error) {
+        console.error(`error in getOneSaleMidll`);
+        res.status(500).json({ message: error.message });
+    }
+    req.sale = sale;
+    next();
+});
+exports.getOneSaleMidll = getOneSaleMidll;
+const deleteOneSale = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield sale_1.default.findByIdAndDelete(req.sale._id);
+        res.json({ message: "sale deleted" });
+    }
+    catch (error) {
+        console.error(`error in deleteOneSale`);
+        res.status(500).json({ message: error.message });
+    }
+});
+exports.deleteOneSale = deleteOneSale;
+const retrieveOneSale = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.json(req.sale);
+});
+exports.retrieveOneSale = retrieveOneSale;

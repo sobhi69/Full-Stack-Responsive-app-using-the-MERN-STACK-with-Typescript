@@ -9,13 +9,15 @@ import ClientProfile from '../../interfaces/ClientProfile'
 import ClientForm from '../../interfaces/ClientForm'
 import SaleForm from '../../interfaces/SaleForm'
 import useGetData from '../../hooks/useGetData'
+import useAuth from '../../hooks/useAuth'
 
 interface SaleProps {
 
 }
 
 const Sale: FC<SaleProps> = ({ }) => {
-
+  const { user } = useAuth()
+  const token = user?.token
   const initalValItems: Item[] = []
   const initalValUsers: UserProfile[] = []
   const initalValClients: ClientProfile[] = []
@@ -24,6 +26,8 @@ const Sale: FC<SaleProps> = ({ }) => {
   const { data: clients, getData: getClients, setData: setClients } = useGetData('/client/get-clients', initalValClients)
   const { data: items, getData: getItems, setData: setItems, isLoading } = useGetData('/item/get-items', initalValItems)
   const [cardItems, setCardItems] = useState<Item[]>([])
+  const [createClientMode, setCreateClientMode] = useState(false)
+
 
   const popupMess = useRef<HTMLDivElement | null>(null)
 
@@ -39,7 +43,9 @@ const Sale: FC<SaleProps> = ({ }) => {
   const createNewClient = async (clientForm: ClientForm) => {
 
     try {
-      const response = await axiosInstance.post('/client/create', clientForm)
+      const response = await axiosInstance.post('/client/create', clientForm, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
       const newClient = await response.data
       setClients(prev => {
         return [newClient, ...prev]
@@ -108,7 +114,7 @@ const Sale: FC<SaleProps> = ({ }) => {
         return { ...item, quantity: item.quantity - Number(quantityInput) }
       }
     })
-
+    setCreateClientMode(false)
     setItems(updatedAvailableItems)
   }
 
@@ -143,8 +149,10 @@ const Sale: FC<SaleProps> = ({ }) => {
     }
 
     try {
-      await axiosInstance.post('/sale/create', saleForm)
-      await axiosInstance.put('/item/update-items', cardItems)
+      await axiosInstance.post('/sale/create', saleForm, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      await axiosInstance.put('/item/update-items', {cardItems,inc:false})
 
       setCardItems([])
       popupMess.current?.classList.add('active')
@@ -168,6 +176,8 @@ const Sale: FC<SaleProps> = ({ }) => {
         cardItems={cardItems}
         deleteFromCard={deleteFromCard}
         createSale={createSale}
+        createClientMode={createClientMode}
+        setCreateClientMode={setCreateClientMode}
       />
 
       <AvailableItems

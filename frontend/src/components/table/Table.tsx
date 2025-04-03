@@ -7,6 +7,7 @@ interface TableProps {
 const Table: FC<TableProps> = ({ columns, rows }) => {
 
     return (
+
         <table>
             <thead>
                 <tr>

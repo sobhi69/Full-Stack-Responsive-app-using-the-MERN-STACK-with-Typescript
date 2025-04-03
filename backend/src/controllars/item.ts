@@ -24,7 +24,8 @@ export const deleteAllItems = async (req: Request, res: Response) => {
 }
 
 export const updateItems = async (req: Request, res: Response) => {
-    const cardItems: Item[] = req.body
+    const cardItems: Item[] = req.body.cardItems
+    const inc:boolean = req.body.inc
 
     const updateOps = cardItems.map(item => {
         const updateOp = {
@@ -34,7 +35,7 @@ export const updateItems = async (req: Request, res: Response) => {
                 },
                 "update": {
                     $inc: {
-                        quantity: - item.quantity
+                        quantity: !inc ? - item.quantity : item.quantity
                     }
                 }
             }
@@ -54,6 +55,36 @@ export const updateItems = async (req: Request, res: Response) => {
         res.status(500).json({ message: error.message })
     }
 }
+
+
+// export const increaseItems = async (req: Request, res: Response) => {
+//     const cardItems: Item[] = req.body
+
+//     const updateOps = cardItems.map(item => {
+//         const updateOp = {
+//             'updateOne': {
+//                 'filter': {
+//                     _id: item._id
+//                 },
+//                 'update': {
+//                     $inc: {
+//                         quantity: item.quantity
+//                     }
+//                 }
+//             }
+//         }
+//         return updateOp
+//     })
+
+//     try {
+//         const result = await ItemModel.bulkWrite(updateOps)
+//         res.json(result)
+//     } catch (error: any) {
+//         console.error(`error in updateItems ${error}`)
+//         res.status(500).json({ message: error.message })
+//     }
+
+// }
 
 export const createOneItem = async (req: Request, res: Response) => {
     const {

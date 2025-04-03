@@ -4,11 +4,11 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import RegisterData from "../interfaces/ResiterData"
 import AuthData from "../interfaces/AuthData"
+import { generateToken } from "../lib/generateToken"
 
 export const register = async (req: Request, res: Response) => {
     const { username, email, phone, password, role }: RegisterData = req.body
-    console.log(role)
-
+    
     if (
         !username ||
         !email ||
@@ -39,9 +39,11 @@ export const register = async (req: Request, res: Response) => {
         email,
         phone,
         password: hashedPwd,
-        role
+        role,
     })
 
+    
+    
     try {
         const userToSend = await UserModel.findById(newUser._id).select('-password')
         res.status(201).json(userToSend)
@@ -82,24 +84,24 @@ export const signIn = async (req: Request, res: Response) => {
     // jwts
 
 
-    const refreshToken = jwt.sign({ userId: foundUser._id }, process.env.REFRESH_TOKEN_SECRET || "", {
+    const token = jwt.sign({ userId: foundUser._id }, process.env.TOKEN_SECRET || "", {
         expiresIn: "7d"
         // you can store the JWT_REFRESH_TIME in .env
     })
 
-    const accessToken = jwt.sign({ userId: foundUser._id }, process.env.ACCESS_TOKEN_SECRET || "", {
-        expiresIn: "60s"
-    })
+    // const accessToken = jwt.sign({ userId: foundUser._id }, process.env.ACCESS_TOKEN_SECRET || "", {
+        // expiresIn: "60s"
+    // })
 
-    res.cookie('jwt', refreshToken, {
-        secure: process.env.NODE_ENV != 'development',
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000
-        // sameSite: 'strict'
-    })
+    // res.cookie('jwt', token, {
+    //     secure: process.env.NODE_ENV != 'development',
+    //     httpOnly: true,
+    //     maxAge: 7 * 24 * 60 * 60 * 1000,
+    //     sameSite: 'strict'
+    // })
 
     try {
-        const userToSend = await UserModel.findByIdAndUpdate(foundUser._id, { accessToken: accessToken }, { new: true }).select('-password')
+        const userToSend = await UserModel.findByIdAndUpdate(foundUser._id,{$set:{token:token}},{new:true}).select('-password')
         res.json(userToSend)
     } catch (error) {
         console.error(`error signIn ${error}`)
@@ -110,36 +112,6 @@ export const signIn = async (req: Request, res: Response) => {
         res.status(500).json({ message: "unkown error occured in sign-in" })
     }
 
-}
-
-
-export const refreshToken = async (req: Request, res: Response) => {
-    console.log(req.cookies)
-    const cookies = req.cookies
-
-    if (!cookies?.jwt) {
-        res.status(401).json({ message: "please sign-in to get a refresh token" })
-        return
-    }
-    const refreshToken = cookies.jwt
-
-
-    try {
-        const payload: any = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET || '')
-
-        if (!payload) {
-            res.status(403).json({ message: "refresh token has expired, please logout and sign in !" })
-            return
-        }
-
-        const accessToken = jwt.sign({ userId: payload.userId }, process.env.ACCESS_TOKEN_SECRET || '', {
-            expiresIn: "100s"
-        })
-
-        res.json({ accessToken })
-    } catch (error: any) {
-        res.status(401).json({ message: error.message })
-    }
 }
 
 

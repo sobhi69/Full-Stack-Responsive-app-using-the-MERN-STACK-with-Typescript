@@ -3,7 +3,7 @@ import mongoose, { InferSchemaType } from 'mongoose'
 const itemSchema = new mongoose.Schema({
     title: {
         type: String,
-        required: true,
+        required: [true,'title is required'],
         trim: true
     },
     cost: {

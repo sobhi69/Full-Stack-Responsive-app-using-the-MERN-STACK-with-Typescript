@@ -12,27 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyJwt = void 0;
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const verifyJwt = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const authorization = req.headers.authorization;
-    if (!authorization || !authorization.startsWith('Bearer ')) {
-        res.status(401).json({ message: "token is not provided" });
-        return;
-    }
-    const token = authorization.split(' ')[1];
-    // if (!token) {
-    //     res.status(404).json({ message: "token is not provided, please sign-in first!" })
-    //     return
-    // }
-    try {
-        const decoded = jsonwebtoken_1.default.verify(token, process.env.TOKEN_SECRET || '');
-        req.userId = decoded.userId;
+exports.verifyAdmin = void 0;
+const user_1 = __importDefault(require("../model/user"));
+const verifyAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_1.default.findById(req.userId);
+    const role = user === null || user === void 0 ? void 0 : user.role;
+    if (role == 'Admin') {
         next();
     }
-    catch (error) {
-        console.error(`error in verifyJtw ${error}`);
-        res.status(500).json({ message: error.message });
+    else {
+        res.status(401).json({ message: "Only users with Admin role can perform this actions!" });
     }
 });
-exports.verifyJwt = verifyJwt;
+exports.verifyAdmin = verifyAdmin;

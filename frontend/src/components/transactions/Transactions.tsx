@@ -1,8 +1,10 @@
-import { FC, useEffect} from 'react'
+import { FC, useEffect, useRef } from 'react'
 import useGetData from '../../hooks/useGetData'
 import './transactions.css'
 import SaleBox from './SaleBox'
 import Sale from '../../interfaces/Sale'
+import { axiosInstance } from '../../api/axiosInstance'
+import useAuth from '../../hooks/useAuth'
 interface TransactionsProps {
 
 }
@@ -11,8 +13,10 @@ interface TransactionsProps {
 
 const Transactions: FC<TransactionsProps> = ({ }) => {
 
-  const initalVal: Sale[] = []
+  const token = useAuth().user?.token
+  const popupMess = useRef<HTMLDivElement | null>(null)
 
+  const initalVal: Sale[] = []
   const {
     getData: getSales,
     data: sales,
@@ -39,6 +43,33 @@ const Transactions: FC<TransactionsProps> = ({ }) => {
     setSales(updatedSales)
   }
 
+  const deleteSale = async (id: string) => {
+    const confirm = window.confirm('are you sure to delete this sale!')
+    if (!confirm) {
+      return 
+    }
+    
+    try {
+      const sale = sales.find(sale => sale._id == id)
+      const cardItems = sale?.cardItems
+      await axiosInstance.delete(`/sale/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      await axiosInstance.put('/item/update-items', { cardItems, inc: true })
+      const filterdSales = sales.filter(sale => sale._id != id)
+      setSales(filterdSales)
+
+      // popup message
+      popupMess.current?.classList.add('active')
+      setTimeout(() => {
+        popupMess.current?.classList.remove('active')
+      }, 3000)
+    } catch (error: any) {
+      const errorMess = error.response.data.message
+      alert(errorMess)
+    }
+  }
+
   if (isLoading) {
     return 'loading...'
   }
@@ -49,10 +80,15 @@ const Transactions: FC<TransactionsProps> = ({ }) => {
 
   return (
     <div className='transactions'>
-      {/* <div>Revenue</div> */}
       {sales.map((sale, index) => (
-        <SaleBox key={index} sale={sale} toggleShowInfo={toggleShowInfo} />
+        <SaleBox
+          deleteSale={deleteSale}
+          key={index}
+          sale={sale}
+          toggleShowInfo={toggleShowInfo} />
+
       ))}
+      <div ref={popupMess} className="popup-mess delete">Sale deleted</div>
     </div>
   )
 }

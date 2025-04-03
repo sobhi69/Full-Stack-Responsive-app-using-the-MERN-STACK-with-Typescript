@@ -12,13 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.refreshToken = exports.signIn = exports.register = void 0;
+exports.logout = exports.signIn = exports.register = void 0;
 const user_1 = __importDefault(require("../model/user"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { username, email, phone, password, role } = req.body;
-    console.log(role);
     if (!username ||
         !email ||
         !password ||
@@ -43,7 +42,7 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         email,
         phone,
         password: hashedPwd,
-        role
+        role,
     });
     try {
         const userToSend = yield user_1.default.findById(newUser._id).select('-password');
@@ -76,21 +75,21 @@ const signIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return;
     }
     // jwts
-    const refreshToken = jsonwebtoken_1.default.sign({ userId: foundUser._id }, process.env.REFRESH_TOKEN_SECRET || "", {
+    const token = jsonwebtoken_1.default.sign({ userId: foundUser._id }, process.env.TOKEN_SECRET || "", {
         expiresIn: "7d"
         // you can store the JWT_REFRESH_TIME in .env
     });
-    const accessToken = jsonwebtoken_1.default.sign({ userId: foundUser._id }, process.env.ACCESS_TOKEN_SECRET || "", {
-        expiresIn: "60s"
-    });
-    res.cookie('jwt', refreshToken, {
-        secure: process.env.NODE_ENV != 'development',
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000
-        // sameSite: 'strict'
-    });
+    // const accessToken = jwt.sign({ userId: foundUser._id }, process.env.ACCESS_TOKEN_SECRET || "", {
+    // expiresIn: "60s"
+    // })
+    // res.cookie('jwt', token, {
+    //     secure: process.env.NODE_ENV != 'development',
+    //     httpOnly: true,
+    //     maxAge: 7 * 24 * 60 * 60 * 1000,
+    //     sameSite: 'strict'
+    // })
     try {
-        const userToSend = yield user_1.default.findByIdAndUpdate(foundUser._id, { accessToken: accessToken }, { new: true }).select('-password');
+        const userToSend = yield user_1.default.findByIdAndUpdate(foundUser._id, { $set: { token: token } }, { new: true }).select('-password');
         res.json(userToSend);
     }
     catch (error) {
@@ -103,30 +102,6 @@ const signIn = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.signIn = signIn;
-const refreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(req.cookies);
-    const cookies = req.cookies;
-    if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt)) {
-        res.status(401).json({ message: "please sign-in to get a refresh token" });
-        return;
-    }
-    const refreshToken = cookies.jwt;
-    try {
-        const payload = jsonwebtoken_1.default.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET || '');
-        if (!payload) {
-            res.status(403).json({ message: "refresh token has expired, please logout and sign in !" });
-            return;
-        }
-        const accessToken = jsonwebtoken_1.default.sign({ userId: payload.userId }, process.env.ACCESS_TOKEN_SECRET || '', {
-            expiresIn: "100s"
-        });
-        res.json({ accessToken });
-    }
-    catch (error) {
-        res.status(401).json({ message: error.message });
-    }
-});
-exports.refreshToken = refreshToken;
 const logout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.cookie('jwt', '', {
         "httpOnly": true,

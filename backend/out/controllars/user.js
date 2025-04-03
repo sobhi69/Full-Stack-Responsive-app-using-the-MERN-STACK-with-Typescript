@@ -26,6 +26,8 @@ const getAllusers = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }
 });
 exports.getAllusers = getAllusers;
+// generate token 
+// 
 const getOneUserMidll = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let user;
     const id = req.params.id;

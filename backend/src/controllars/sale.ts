@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { json, NextFunction, Request, Response } from 'express'
 import Sale from '../interfaces/Sale'
 import SaleModel from '../model/sale'
 export const createSale = async (req: Request, res: Response) => {
@@ -15,7 +15,7 @@ export const createSale = async (req: Request, res: Response) => {
         discount,
         addition,
         salesPerson,
-        client 
+        client
     })
 
     try {
@@ -31,21 +31,57 @@ export const createSale = async (req: Request, res: Response) => {
 // 
 
 
-export const getSales = async (req:Request,res:Response) => {
+export const getSales = async (req: Request, res: Response) => {
     try {
         const sales = await SaleModel.find()
         res.json(sales)
     } catch (error: any) {
         console.error(`error in getItems ${error}`)
         res.status(500).json({ message: error.message })
-    } 
+    }
 }
 
-export const deleteSales = async (req:Request,res:Response) => {
+export const deleteSales = async (req: Request, res: Response) => {
     try {
         await SaleModel.deleteMany()
-        res.json({message:"deleted"})
+        res.json({ message: "deleted" })
     } catch (error) {
-        
+
     }
+}
+
+interface SaleRequest extends Request {
+    sale?:any
+}
+
+export const getOneSaleMidll = async (req: SaleRequest, res: Response,next:NextFunction) => {
+    let sale
+
+    try {
+        sale = await SaleModel.findById(req.params.id)
+        if (!sale) {
+            res.status(404).json({message:`sale with id: ${req.params.id} doesn't exist`})
+            return 
+        }
+    } catch (error: any) {
+        console.error(`error in getOneSaleMidll`)
+        res.status(500).json({ message: error.message })
+    }
+
+    req.sale = sale 
+    next()
+}
+
+export const deleteOneSale = async (req:SaleRequest,res:Response) => {
+    try {
+        await SaleModel.findByIdAndDelete(req.sale._id)
+        res.json({message:"sale deleted"})
+    } catch (error: any) {
+        console.error(`error in deleteOneSale`)
+        res.status(500).json({ message: error.message })
+    }
+}
+
+export const retrieveOneSale = async (req:SaleRequest,res:Response) => {
+    res.json(req.sale)
 }

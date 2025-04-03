@@ -33,7 +33,7 @@ const createOneClient = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
     const foundClient = yield client_1.default.findOne({ phone: phone });
     if (foundClient) {
-        res.status(409).json({ message: "clinet phone already exists in DB" });
+        res.status(409).json({ message: "Conflict error. clinet with this phone already exists in DB" });
         return;
     }
     const newClient = new client_1.default({

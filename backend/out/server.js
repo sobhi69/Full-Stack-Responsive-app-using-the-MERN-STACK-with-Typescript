@@ -14,9 +14,9 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3001;
 // middlewares
+app.use((0, cors_1.default)(corsOptions_1.corsOptions));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
-app.use((0, cors_1.default)(corsOptions_1.corsOptions));
 app.use((0, cookie_parser_1.default)());
 const user_1 = __importDefault(require("./routes/user"));
 const client_1 = __importDefault(require("./routes/client"));

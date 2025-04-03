@@ -16,6 +16,8 @@ interface RequestUser extends Request {
     user?: any
 }
 
+// generate token 
+// 
 
 export const getOneUserMidll = async (req: RequestUser, res: Response, next: NextFunction) => {
     let user

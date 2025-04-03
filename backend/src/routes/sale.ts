@@ -2,20 +2,24 @@ import express from 'express'
 import {
     createSale,
     getSales,
-    deleteSales
+    deleteSales,
+    getOneSaleMidll,
+    deleteOneSale,
+    retrieveOneSale
 
 } from '../controllars/sale'
+import { verifyJwt } from '../middlware/verifyJwt'
+import { verifyAdmin } from '../middlware/verifyAdmin'
 const router = express.Router()
 
-router.post('/create', createSale)
 router.get('/get-sales', getSales)
+router.post('/create', verifyJwt, createSale)
+router.delete('/delete-sales', verifyJwt, verifyAdmin, deleteSales)
 
-router.delete('/delete-sales' ,deleteSales)
 
-
-// router.route('/:id')
-//     .get(getOneSaleMidll, retrieveOneSale)
-//     .delete(getOneSaleMidll, deleteOneSale)
+router.route('/:id')
+    .delete(verifyJwt,verifyAdmin,getOneSaleMidll, deleteOneSale)
+    .get(getOneSaleMidll, retrieveOneSale)
 //     .patch(getOneSaleMidll, patchOneSale)
 
 

@@ -1,4 +1,4 @@
-import { FC, FormEvent, useEffect, useState } from 'react'
+import React, { FC, FormEvent, useEffect, useState } from 'react'
 import Item from '../../interfaces/Item'
 import { TiDelete } from 'react-icons/ti'
 import UserProfile from '../../interfaces/UserProfile'
@@ -13,7 +13,10 @@ interface SaleCardProps {
     createNewClient: (clientForm: ClientForm) => Promise<boolean>
     users: UserProfile[],
     clients: ClientProfile[],
-    createSale: (saleForm: SaleForm) => Promise<void>
+    createSale: (saleForm: SaleForm) => Promise<void>,
+    createClientMode:boolean,
+    setCreateClientMode: React.Dispatch<React.SetStateAction<boolean>>
+
 }
 
 const SaleCard: FC<SaleCardProps> = ({
@@ -22,9 +25,10 @@ const SaleCard: FC<SaleCardProps> = ({
     cardItems,
     clients,
     users,
-    createSale
+    createSale,
+    createClientMode,
+    setCreateClientMode
 }) => {
-    const [createClientMode, setCreateClientMode] = useState(false)
     const [clientForm, setClientForm] = useState<ClientForm>({
         clientName: "",
         phone: "",

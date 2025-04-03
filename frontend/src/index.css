@@ -51,6 +51,13 @@
     cursor: pointer;
 }
 
+.delete-btn {
+    transition: 0.15s;
+    background-color: rgba(91, 42, 29, 0.847);
+    color: white;
+    border-radius: 2px;
+}
+
 .submit-btn {
     transition: 0.15s;
     background-color: rgba(99, 137, 43, 0.847);
@@ -58,7 +65,7 @@
     border-radius: 2px;
 }
 
-.submit-btn:hover {
+.submit-btn:hover , .delete-btn:hover{
     opacity: 0.7;
 }
 

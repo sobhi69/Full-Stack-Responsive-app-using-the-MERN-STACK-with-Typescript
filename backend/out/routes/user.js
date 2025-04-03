@@ -12,3 +12,5 @@ router.route('/:id')
     .delete(user_1.getOneUserMidll, user_1.deleteOneUser)
     .patch(user_1.getOneUserMidll, user_1.patchOneUser);
 exports.default = router;
+// alright it seems like 
+// you wnna create some 
