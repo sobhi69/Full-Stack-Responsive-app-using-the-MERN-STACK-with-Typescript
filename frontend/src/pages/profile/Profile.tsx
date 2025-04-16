@@ -12,7 +12,7 @@ const Header: FC = () => {
   return (
     <header className='easy-header'>
       <h1>Easy To Earn</h1>
-      <Link to={'/easy-to-earn'}>go Back</Link>
+      <Link to={'/'}>go Back</Link>
     </header>
   )
 }

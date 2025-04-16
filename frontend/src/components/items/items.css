@@ -34,3 +34,9 @@
 .items-page .search-box {
     margin: 1rem 0;
 }
+
+.items-page .items-table .container {
+    height: 35rem;
+    overflow: auto;
+    padding: 1.4rem 0.7rem 1.4rem 0;
+}

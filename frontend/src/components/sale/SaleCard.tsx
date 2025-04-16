@@ -16,7 +16,6 @@ interface SaleCardProps {
     createSale: (saleForm: SaleForm) => Promise<void>,
     createClientMode:boolean,
     setCreateClientMode: React.Dispatch<React.SetStateAction<boolean>>
-
 }
 
 const SaleCard: FC<SaleCardProps> = ({
@@ -111,7 +110,7 @@ const SaleCard: FC<SaleCardProps> = ({
                         ))}
                     </select>
                     <select onChange={(e) => setCurClient(e.target.value)} name="" id="">
-                        <option value="">Client</option>
+                        <option value="">{curClient}</option>
                         {clients.map((client, index) => (
                             <option key={index} value={`${client.clientName}  ${client.phone}`}>
                                 {`${client.clientName}  ${client.phone}`}

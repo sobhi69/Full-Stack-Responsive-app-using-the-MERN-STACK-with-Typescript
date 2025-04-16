@@ -29,6 +29,7 @@ const AvailableItems: FC<AvailableItemsProps> = ({ items, addToCard, isLoading }
                                 type="search"
                                 placeholder='search by title' />
                         </div>
+                        <div className="container">
                         <table>
                             <thead>
                                 <tr>
@@ -56,6 +57,7 @@ const AvailableItems: FC<AvailableItemsProps> = ({ items, addToCard, isLoading }
                                     ))}
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 )}
         </>

@@ -54,7 +54,7 @@ const EditItem: FC<EditItemProps> = ({ itemToUpdate, updateItem }) => {
 
     return (
         <div className='form'>
-            <h2>Create new item</h2>
+            <h2>Edit item</h2>
             <form onSubmit={(e) => handleSubmit(e)}>
                 <div className="group-form">
                     <label htmlFor="title">Title</label>

@@ -2,7 +2,7 @@
 type Origin = string | undefined
 type Cb = (err: Error | null, origin?: boolean) => void
 
-const allowedOrigins = ['http://localhost:3011', "http://localhost:5173"]
+const allowedOrigins = ['http://localhost:3011', "http://localhost:5174"]
 
 
 export const corsOptions = {

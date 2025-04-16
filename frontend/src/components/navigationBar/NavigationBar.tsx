@@ -14,7 +14,7 @@ const NavigationBar: FC<NavigationBarProps> = ({ }) => {
             <button className={active == 'sale' ? "active" : ""} onClick={() => setActive('sale')}>Sale</button>
             <button className={active == 'users' ? "active" : ""} onClick={() => setActive('users')}>Users</button>
             <button className={active == 'clients' ? "active" : ""} onClick={() => setActive('clients')}>Clients</button>
-            <button className={active == 'transactions' ? "active" : ""} onClick={() => setActive('transactions')}>Transactions</button>
+            <button className={active == 'sales' ? "active" : ""} onClick={() => setActive('sales')}>Sales</button>
         </div>
     )
 }

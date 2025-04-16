@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createOneClient = exports.getAllClients = void 0;
+exports.retrieveOneClient = exports.patchClient = exports.deleteClient = exports.getOneClientMidll = exports.createOneClient = exports.getAllClients = void 0;
 const client_1 = __importDefault(require("../model/client"));
 const getAllClients = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -51,3 +51,48 @@ const createOneClient = (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 });
 exports.createOneClient = createOneClient;
+const getOneClientMidll = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let client;
+    try {
+        client = yield client_1.default.findById(req.params.id);
+        if (!client) {
+            res.status(404).json({ message: "this client doen't exist in DB" });
+            return;
+        }
+    }
+    catch (error) {
+        console.error(`error in getOneClientMidll ${error}`);
+        res.status(500).json({ message: error.message });
+    }
+    req.client = client;
+    next();
+});
+exports.getOneClientMidll = getOneClientMidll;
+const deleteClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield client_1.default.findByIdAndDelete(req.client._id);
+        res.json({ message: "client has been deleted" });
+    }
+    catch (error) {
+        console.error(`error in deleteClient ${error}`);
+        res.status(500).json({ message: error.message });
+    }
+});
+exports.deleteClient = deleteClient;
+const patchClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const curClient = req.client;
+    const { clientName, phone, address } = req.body;
+    try {
+        const newClientObj = yield client_1.default.findByIdAndUpdate(curClient._id, { $set: { clientName, phone, address } }, { new: true });
+        res.json(newClientObj);
+    }
+    catch (error) {
+        console.error(`error in patchClient ${error}`);
+        res.status(500).json({ message: error.message });
+    }
+});
+exports.patchClient = patchClient;
+const retrieveOneClient = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.json(req.client);
+});
+exports.retrieveOneClient = retrieveOneClient;

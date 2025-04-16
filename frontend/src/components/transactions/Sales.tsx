@@ -1,17 +1,17 @@
 import { FC, useEffect, useRef } from 'react'
 import useGetData from '../../hooks/useGetData'
-import './transactions.css'
+import './sales.css'
 import SaleBox from './SaleBox'
 import Sale from '../../interfaces/Sale'
 import { axiosInstance } from '../../api/axiosInstance'
 import useAuth from '../../hooks/useAuth'
-interface TransactionsProps {
+interface SalesProps {
 
 }
 
 
 
-const Transactions: FC<TransactionsProps> = ({ }) => {
+const Sales: FC<SalesProps> = ({ }) => {
 
   const token = useAuth().user?.token
   const popupMess = useRef<HTMLDivElement | null>(null)
@@ -75,11 +75,11 @@ const Transactions: FC<TransactionsProps> = ({ }) => {
   }
 
   if (!sales.length) {
-    return 'no sale transactions!'
+    return 'no sale sales!'
   }
 
   return (
-    <div className='transactions'>
+    <div className='sales'>
       {sales.map((sale, index) => (
         <SaleBox
           deleteSale={deleteSale}
@@ -95,4 +95,4 @@ const Transactions: FC<TransactionsProps> = ({ }) => {
 
 
 
-export default Transactions;
+export default Sales;
